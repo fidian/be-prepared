@@ -3,8 +3,8 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:screen_brightness/screen_brightness.dart';
-import 'package:tools_app/screens/Flash.dart';
-import 'package:tools_app/screens/screenBright.dart';
+import 'package:be_prepared/screens/Flash.dart';
+import 'package:be_preapred/screens/screenBright.dart';
 import 'package:torch_light/torch_light.dart';
 
 void main() {

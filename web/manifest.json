@@ -1,6 +1,6 @@
 {
-    "name": "tools_app",
-    "short_name": "tools_app",
+    "name": "Be Prepared",
+    "short_name": "Be Prepared",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

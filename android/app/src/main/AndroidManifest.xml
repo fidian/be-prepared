@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.tools_app">
+    package="com.rumkin.be_prepared">
    <application
-        android:label="tools_app"
+        android:label="Be Prepared"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
