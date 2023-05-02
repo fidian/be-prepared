@@ -1,5 +1,5 @@
-name: tools_app
-description: A new Flutter project.
+name: be_prepared
+description: Toolbox of useful, offline utilities
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
