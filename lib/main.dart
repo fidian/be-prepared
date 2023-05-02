@@ -3,11 +3,12 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:screen_brightness/screen_brightness.dart';
-import 'package:be_prepared/screens/Flash.dart';
-import 'package:be_preapred/screens/screenBright.dart';
-import 'package:torch_light/torch_light.dart';
+import 'package:be_prepared/screens/screenBright.dart';
+import 'package:torch_controller/torch_controller.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() {
+  TorchController().initialize();
   runApp(const MyApp());
 }
 
@@ -35,16 +36,26 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   bool isFlashAvailable = false;
   double currBrightness = 0.0;
+  bool isTorchOn = false;
+  final torchController = TorchController();
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     loadInits();
+    checkTorch();
   }
 
   loadInits() async {
-    isFlashAvailable = await TorchLight.isTorchAvailable();
+    isFlashAvailable = await torchController.hasTorch ?? false;
     setState(() {});
+  }
+
+  checkTorch() async {
+    if (isFlashAvailable) {
+      isTorchOn = await torchController.isTorchActive ?? false;
+      setState(() {});
+    }
   }
 
   @override
@@ -65,22 +76,25 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             if (isFlashAvailable)
               InkWell(
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (ctx) => const FLashLight(),
-                    ),
-                  );
+                onTap: () async {
+                  if (isTorchOn) {
+                    await torchController.toggle();
+                  } else {
+                    await torchController.toggle();
+                  }
+                  isTorchOn = !isTorchOn;
+                  setState(() {});
                 },
                 child: SvgPicture.asset(
                   "assets/flashlight.svg",
-                  color: Colors.white,
+                  color: isTorchOn ? Colors.green : Colors.white,
                 ),
               ),
             InkWell(
               onTap: () async {
                 currBrightness = await ScreenBrightness().current;
                 log("Current brightnes: $currBrightness");
+                if (!mounted) return;
                 Navigator.of(context)
                     .push(
                   MaterialPageRoute(
@@ -101,7 +115,50 @@ class _MyHomePageState extends State<MyHomePage> {
                 showAboutDialog(
                   context: context,
                   children: [
-                    const Text("Icons used from Stockio.com & Flaticon.com"),
+                    InkWell(
+                      onTap: () async {
+                        final url = Uri.parse(
+                            "https://www.flaticon.com/free-icons/flashlight");
+                        await launchUrl(
+                          url,
+                          mode: LaunchMode.externalApplication,
+                        );
+                      },
+                      child: const Text(
+                        "Flashlight icons created by Aranagraphics - Flaticon",
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                    ),
+                    const Divider(),
+                    InkWell(
+                      onTap: () async {
+                        final url = Uri.parse(
+                            "https://www.flaticon.com/free-icons/flashlight");
+                        await launchUrl(
+                          url,
+                          mode: LaunchMode.externalApplication,
+                        );
+                      },
+                      child: const Text(
+                        "Idea icons created by Good Ware - Flaticon",
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                    ),
+                    const Divider(),
+                    InkWell(
+                      onTap: () async {
+                        final url = Uri.parse(
+                            "https://www.flaticon.com/free-icons/flashlight");
+                        await launchUrl(
+                          url,
+                          mode: LaunchMode.externalApplication,
+                        );
+                      },
+                      child: const Text(
+                        "Info icon by Stockio.com",
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                    ),
                   ],
                 );
               },
