@@ -40,6 +40,11 @@ dependencies:
   screen_brightness: ^0.2.2
   torch_controller: ^2.0.1
   url_launcher: ^6.1.10
+  permission_handler: ^10.2.0
+  camera: ^0.10.5
+  shared_preferences: ^2.1.1
+  flutter_local_notifications: ^14.1.0
+  flutter_timezone: ^1.0.6
 
 dev_dependencies:
   flutter_test:
