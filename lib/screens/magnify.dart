@@ -17,7 +17,7 @@ class _MagnifyState extends State<Magnify> {
   late List<CameraDescription> _cameras;
   late CameraController controller;
   double zoom = 1.0;
-  double scale = 0.0;
+  double scale = 1.0;
 
   @override
   void initState() {
@@ -36,6 +36,7 @@ class _MagnifyState extends State<Magnify> {
       }
       zoom = await controller.getMaxZoomLevel();
       log("Max zoom level: $zoom");
+      log("Min zoom level: ${await controller.getMinZoomLevel()}");
       await controller.setZoomLevel(zoom);
       setState(() {});
     }).catchError((Object e) {
@@ -66,13 +67,31 @@ class _MagnifyState extends State<Magnify> {
       body: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onScaleStart: (details) {
-          log("scale start: $details");
+          //log("scale start: $details");
+          //log("-------------------------------------------------------------");
+          zoom = scale;
+          //log("start: $zoom");
         },
         onScaleUpdate: (details) async {
-          log("scale update: $details");
+          if (details.pointerCount != 2) return;
+          if (details.scale == 1.0) {
+            log("in if scale: ${details.scale}");
+            return;
+          } else {
+            //scale += details.scale.clamp(1, 10);
+          }
+          //log("scale update: $details");
           // zoom = zoom * details.scale;
+          // if (zoom * details.scale < 1 || zoom * details.scale > 8) {
+          //   log("value: ${zoom * details.scale}");
+          //   return;
+          // }
+          //zoom *= details.scale;
           await controller.setZoomLevel(zoom * details.scale);
-          //scale = details.scale;
+          //log("clamp: ${details.scale.clamp(1.0, 10.0)}");
+          //scale = details.scale.clamp(1, 10);
+          //log("update: $scale");
+          scale = zoom * details.scale;
         },
         onScaleEnd: (details) {
           //zoom *= scale;
@@ -103,7 +122,13 @@ class _MagnifyState extends State<Magnify> {
     return Stack(
       alignment: Alignment.bottomLeft,
       children: [
-        CameraPreview(controller),
+        SizedBox(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: CameraPreview(
+            controller,
+          ),
+        ),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: InkWell(
