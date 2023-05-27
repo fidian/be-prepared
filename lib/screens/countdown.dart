@@ -3,6 +3,8 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_timezone/flutter_timezone.dart';
@@ -33,12 +35,78 @@ class _CountDownTimerState extends State<CountDownTimer> {
   int h1 = 0, h2 = 0, m1 = 0, m2 = 0, s1 = 0, s2 = 0;
   Timer? timer;
   bool isActive = false;
+  SharedPreferences? prefs;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     initialize();
     //setupLocalNotifications();
+    init();
+  }
+
+  init() async {
+    List<String> timenow;
+    log((timenow = DateTime.now()
+            .toString()
+            .split(" ")
+            .last
+            .split(".")
+            .first
+            .split(":"))
+        .toString());
+    // var t = (const Duration(hours: 23, minutes: 53, seconds: 0) -
+    //         Duration(
+    //             hours: int.parse(timenow[0]),
+    //             minutes: int.parse(timenow[1]),
+    //             seconds: int.parse(timenow[2])))
+    //     .inSeconds;
+    // log("$t");
+
+    prefs ??= await SharedPreferences.getInstance();
+    if (prefs?.getBool("countDownRunning") ?? false) {
+      flutterLocalNotificationsPlugin.cancelAll();
+      var timeSaved = (prefs?.getString("countDownTimeNow") ?? '').split(":");
+      log("sasasa: $timeSaved");
+
+      var time = prefs?.getString("countDownTime") ?? '';
+      if (time == '') return;
+      List<String> t = time.toString().split(":");
+      Duration durationSaved = Duration(
+        hours: int.parse(t[0]),
+        minutes: int.parse(t[1]),
+        seconds: int.parse(t[2].split(".")[0]),
+      );
+      log("duration saved: $durationSaved");
+      int sec = (Duration(
+                  hours: int.parse(timeSaved[0]),
+                  minutes: int.parse(timeSaved[1]),
+                  seconds: int.parse(timeSaved[2])) -
+              Duration(
+                  hours: int.parse(timenow[0]),
+                  minutes: int.parse(timenow[1]),
+                  seconds: int.parse(timenow[2])))
+          .inSeconds;
+      log("sec $sec");
+      var newTime = durationSaved + Duration(seconds: sec);
+      log("new time: $newTime");
+      var TimeToLoad = newTime.toString().split(":");
+      log("time to load: $TimeToLoad");
+      if (TimeToLoad[0].length == 2) {
+        h1 = int.parse(TimeToLoad[0][0]);
+        h2 = int.parse(TimeToLoad[0][1]);
+      } else {
+        h1 = 0;
+        h2 = int.parse(t[0][0]);
+      }
+      m1 = int.parse(TimeToLoad[1][0]);
+      m2 = int.parse(TimeToLoad[1][1]);
+      List<String> ts = TimeToLoad[2].split(".");
+      s1 = int.parse(ts[0][0]);
+      s2 = int.parse(ts[0][1]);
+      setState(() {});
+      startTimer();
+    }
   }
 
   initialize() async {
@@ -76,6 +144,13 @@ class _CountDownTimerState extends State<CountDownTimer> {
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
     );
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    timer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -298,78 +373,103 @@ class _CountDownTimerState extends State<CountDownTimer> {
                 ],
               ),
             ),
+            SizedBox(
+              height: size.height * 0.1,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                ElevatedButton(
-                  onPressed: () {
-                    if (h1 == 2 && h2 > 3) {
-                      errorMessage();
-                      return;
-                    }
-                    if (timer != null) {
-                      if (timer!.isActive) return;
-                    }
-                    var time = Duration(
-                      hours: int.parse("$h1$h2"),
-                      minutes: int.parse("$m1$m2"),
-                      seconds: int.parse("$s1$s2"),
-                    );
-                    setupLocalNotifications("Count Down",
-                        "Your Count Down Timer has finished", time);
-                    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-                      time -= const Duration(seconds: 1);
-                      List<String> t = time.toString().split(":");
-                      if (t[0].length == 2) {
-                        h1 = int.parse(t[0][0]);
-                        h2 = int.parse(t[0][1]);
-                      } else {
-                        h1 = 0;
-                        h2 = int.parse(t[0][0]);
-                      }
-                      m1 = int.parse(t[1][0]);
-                      m2 = int.parse(t[1][1]);
-                      List<String> ts = t[2].split(".");
-                      s1 = int.parse(ts[0][0]);
-                      s2 = int.parse(ts[0][1]);
-                      isActive = true;
-                      setState(() {});
-                      if (time == const Duration(seconds: 0)) {
-                        timer.cancel();
+                InkWell(
+                  onTap: () async {
+                    if (isActive) {
+                      if (timer != null) {
                         isActive = false;
+                        timer?.cancel();
+                        await prefs?.setBool("countDownRunning", false);
                       }
-                      log(time.toString());
-                    });
+                    } else {
+                      startTimer();
+                    }
                   },
-                  child: const Text("Set"),
+                  child: SvgPicture.asset(
+                    "assets/${isActive ? "pause" : "play"}.svg",
+                    color: Colors.white,
+                    height: size.height * 0.1,
+                  ),
                 ),
-                ElevatedButton(
-                  onPressed: () {
+                InkWell(
+                  onTap: () async {
+                    h1 = h2 = m1 = m2 = s1 = s2 = 0;
+
                     if (timer != null) {
                       isActive = false;
                       timer?.cancel();
+                      await flutterLocalNotificationsPlugin.cancelAll();
+                      await prefs?.setBool("countDownRunning", false);
                     }
+                    setState(() {});
                   },
-                  child: const Text("Cancel"),
+                  child: SvgPicture.asset(
+                    "assets/reset.svg",
+                    color: Colors.white,
+                    height: size.height * 0.1,
+                  ),
                 ),
               ],
-            ),
-            ElevatedButton(
-              onPressed: () {
-                h1 = h2 = m1 = m2 = s1 = s2 = 0;
-
-                if (timer != null) {
-                  isActive = false;
-                  timer?.cancel();
-                }
-                setState(() {});
-              },
-              child: const Text("Reset"),
             ),
           ],
         ),
       ),
     );
+  }
+
+  startTimer() {
+    if (h1 == 2 && h2 > 3) {
+      errorMessage();
+      return;
+    }
+    if (timer != null) {
+      if (timer!.isActive) return;
+    }
+    if (h1 == 0 && h2 == 0 && m1 == 0 && m2 == 0 && s1 == 0 && s2 == 0) return;
+    var time = Duration(
+      hours: int.parse("$h1$h2"),
+      minutes: int.parse("$m1$m2"),
+      seconds: int.parse("$s1$s2"),
+    );
+    setupLocalNotifications(
+        "Count Down", "Your Count Down Timer has finished", time);
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
+      time -= const Duration(seconds: 1);
+      List<String> t = time.toString().split(":");
+      if (t[0].length == 2) {
+        h1 = int.parse(t[0][0]);
+        h2 = int.parse(t[0][1]);
+      } else {
+        h1 = 0;
+        h2 = int.parse(t[0][0]);
+      }
+      m1 = int.parse(t[1][0]);
+      m2 = int.parse(t[1][1]);
+      List<String> ts = t[2].split(".");
+      s1 = int.parse(ts[0][0]);
+      s2 = int.parse(ts[0][1]);
+      isActive = true;
+      setState(() {});
+      await prefs?.setString("countDownTime", time.toString());
+      await prefs?.setBool("countDownRunning", true);
+      await prefs?.setString(
+        "countDownTimeNow",
+        DateTime.now().toString().split(" ").last.split(".").first,
+      );
+      if (time == const Duration(seconds: 0)) {
+        timer.cancel();
+        isActive = false;
+        setState(() {});
+        await prefs?.setBool("countDownRunning", false);
+      }
+      log(time.toString());
+    });
   }
 
   errorMessage() {

@@ -1,8 +1,9 @@
+import 'dart:developer';
+
 import 'package:camera/camera.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
 
 class Mirror extends StatefulWidget {
   const Mirror({super.key});
@@ -15,6 +16,8 @@ class _MirrorState extends State<Mirror> {
   PermissionStatus? permissionStatus;
   late List<CameraDescription> _cameras;
   late CameraController controller;
+  double zoom = 1.0;
+  double scale = 1.0;
 
   @override
   void initState() {
@@ -58,15 +61,48 @@ class _MirrorState extends State<Mirror> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: permissionStatus == null
-          ? const Center(
-              child: Text("Checking Camera"),
-            )
-          : permissionStatus == PermissionStatus.granted
-              ? camera(context)
-              : const Center(
-                  child: Text("Camera Permission is denied"),
-                ),
+      body: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onScaleStart: (details) {
+          //log("scale start: $details");
+          //log("-------------------------------------------------------------");
+          zoom = scale;
+          //log("start: $zoom");
+        },
+        onScaleUpdate: (details) async {
+          if (details.pointerCount != 2) return;
+          if (details.scale == 1.0) {
+            log("in if scale: ${details.scale}");
+            return;
+          } else {
+            //scale += details.scale.clamp(1, 10);
+          }
+          //log("scale update: $details");
+          // zoom = zoom * details.scale;
+          // if (zoom * details.scale < 1 || zoom * details.scale > 8) {
+          //   log("value: ${zoom * details.scale}");
+          //   return;
+          // }
+          //zoom *= details.scale;
+          await controller.setZoomLevel(zoom * details.scale);
+          //log("clamp: ${details.scale.clamp(1.0, 10.0)}");
+          //scale = details.scale.clamp(1, 10);
+          //log("update: $scale");
+          scale = zoom * details.scale;
+        },
+        onScaleEnd: (details) {
+          //zoom *= scale;
+        },
+        child: permissionStatus == null
+            ? const Center(
+                child: Text("Checking Camera"),
+              )
+            : permissionStatus == PermissionStatus.granted
+                ? camera(context)
+                : const Center(
+                    child: Text("Camera Permission is denied"),
+                  ),
+      ),
     );
   }
 
@@ -76,9 +112,14 @@ class _MirrorState extends State<Mirror> {
     return Stack(
       alignment: Alignment.bottomLeft,
       children: [
-        Transform(
-          alignment: Alignment.center,
-          transform: Matrix4.rotationY(math.pi),
+        // Transform(
+        //   alignment: Alignment.center,
+        //   transform: Matrix4.rotationY(math.pi),
+        //   child: CameraPreview(controller),
+        // ),
+        SizedBox(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
           child: CameraPreview(controller),
         ),
         Padding(
