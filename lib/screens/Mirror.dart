@@ -84,10 +84,16 @@ class _MirrorState extends State<Mirror> {
           //   return;
           // }
           //zoom *= details.scale;
-          await controller.setZoomLevel(zoom * details.scale);
+          // await controller.setZoomLevel(zoom * details.scale);
           //log("clamp: ${details.scale.clamp(1.0, 10.0)}");
           //scale = details.scale.clamp(1, 10);
           //log("update: $scale");
+          if (zoom * details.scale > await controller.getMaxZoomLevel() ||
+              zoom * details.scale < await controller.getMinZoomLevel()) {
+            log("if check ${zoom * details.scale}");
+            return;
+          }
+          await controller.setZoomLevel(zoom * details.scale);
           scale = zoom * details.scale;
         },
         onScaleEnd: (details) {

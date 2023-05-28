@@ -16,8 +16,10 @@ class _MagnifyState extends State<Magnify> {
   PermissionStatus? permissionStatus;
   late List<CameraDescription> _cameras;
   late CameraController controller;
-  double zoom = 1.0;
-  double scale = 1.0;
+  double zoom = 8.0;
+  double scale = 8.0;
+  double zooming = 0.0;
+  double zoomDeccrement = 0.0;
 
   @override
   void initState() {
@@ -35,6 +37,7 @@ class _MagnifyState extends State<Magnify> {
         return;
       }
       zoom = await controller.getMaxZoomLevel();
+      zooming = zoom;
       log("Max zoom level: $zoom");
       log("Min zoom level: ${await controller.getMinZoomLevel()}");
       await controller.setZoomLevel(zoom);
@@ -80,17 +83,24 @@ class _MagnifyState extends State<Magnify> {
           } else {
             //scale += details.scale.clamp(1, 10);
           }
-          //log("scale update: $details");
+          log("scale update: ${details.scale}");
           // zoom = zoom * details.scale;
           // if (zoom * details.scale < 1 || zoom * details.scale > 8) {
           //   log("value: ${zoom * details.scale}");
           //   return;
           // }
           //zoom *= details.scale;
-          await controller.setZoomLevel(zoom * details.scale);
+          //await controller.setZoomLevel(zoom * details.scale);
           //log("clamp: ${details.scale.clamp(1.0, 10.0)}");
           //scale = details.scale.clamp(1, 10);
           //log("update: $scale");
+
+          if (zoom * details.scale > await controller.getMaxZoomLevel() ||
+              zoom * details.scale < await controller.getMinZoomLevel()) {
+            log("if check ${zoom * details.scale}");
+            return;
+          }
+          await controller.setZoomLevel(zoom * details.scale);
           scale = zoom * details.scale;
         },
         onScaleEnd: (details) {
