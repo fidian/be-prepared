@@ -129,14 +129,26 @@ class _MagnifyState extends State<Magnify> {
   bool isFlashOn = false;
 
   Widget camera(BuildContext ctx) {
+    Size size = MediaQuery.of(context).size;
     return Stack(
       alignment: Alignment.bottomLeft,
       children: [
+        // SizedBox(
+        //   height: MediaQuery.of(context).size.height,
+        //   width: MediaQuery.of(context).size.width,
+        //   child: CameraPreview(
+        //     controller,
+        //   ),
+        // ),
         SizedBox(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
-          child: CameraPreview(
-            controller,
+          child: Transform.scale(
+            scale: controller.value.aspectRatio / (size.width / size.height),
+            child: AspectRatio(
+              aspectRatio: controller.value.aspectRatio,
+              child: CameraPreview(controller),
+            ),
           ),
         ),
         Padding(
