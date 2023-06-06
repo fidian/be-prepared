@@ -47,6 +47,8 @@ class _StopWatchState extends State<StopWatch> {
     if (timer != null) {
       if (timer!.isActive) return;
     }
+    isRunning = true;
+    setState(() {});
 
     timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       time++;
@@ -138,7 +140,9 @@ class _StopWatchState extends State<StopWatch> {
       child: SvgPicture.asset(
         "assets/$text.svg",
         color: Colors.white,
-        height: size.height * 0.1,
+        height: MediaQuery.of(context).orientation == Orientation.portrait
+            ? size.height * 0.1
+            : size.width * 0.1,
       ),
     );
 

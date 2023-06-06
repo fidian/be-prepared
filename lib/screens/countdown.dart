@@ -2,27 +2,25 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+//import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:timezone/data/latest_all.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
-import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:alarm/alarm.dart';
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
-@pragma('vm:entry-point')
-void notificationTapBackground(NotificationResponse notificationResponse) {
-  // ignore: avoid_print
-  print('notification(${notificationResponse.id}) action tapped: '
-      '${notificationResponse.actionId} with'
-      ' payload: ${notificationResponse.payload}');
-  if (notificationResponse.input?.isNotEmpty ?? false) {
-    // ignore: avoid_print
-    print(
-        'notification action tapped with input: ${notificationResponse.input}');
-  }
-}
+// final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+//     FlutterLocalNotificationsPlugin();
+// @pragma('vm:entry-point')
+// void notificationTapBackground(NotificationResponse notificationResponse) {
+//   // ignore: avoid_print
+//   print('notification(${notificationResponse.id}) action tapped: '
+//       '${notificationResponse.actionId} with'
+//       ' payload: ${notificationResponse.payload}');
+//   if (notificationResponse.input?.isNotEmpty ?? false) {
+//     // ignore: avoid_print
+//     print(
+//         'notification action tapped with input: ${notificationResponse.input}');
+//   }
+// }
 
 class CountDownTimer extends StatefulWidget {
   const CountDownTimer({super.key});
@@ -40,7 +38,8 @@ class _CountDownTimerState extends State<CountDownTimer> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    initialize();
+    //initialize();
+
     //setupLocalNotifications();
     init();
   }
@@ -65,7 +64,7 @@ class _CountDownTimerState extends State<CountDownTimer> {
 
     prefs ??= await SharedPreferences.getInstance();
     if (prefs?.getBool("countDownRunning") ?? false) {
-      flutterLocalNotificationsPlugin.cancelAll();
+      // flutterLocalNotificationsPlugin.cancelAll();
       var timeSaved = (prefs?.getString("countDownTimeNow") ?? '').split(":");
       log("sasasa: $timeSaved");
 
@@ -109,42 +108,42 @@ class _CountDownTimerState extends State<CountDownTimer> {
     }
   }
 
-  initialize() async {
-    await flutterLocalNotificationsPlugin.initialize(
-      const InitializationSettings(
-        android: AndroidInitializationSettings("@mipmap/ic_launcher"),
-      ),
-      onDidReceiveNotificationResponse: (details) {
-        //noti = "normal: ${details.payload!}";
-      },
-      onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
-    );
-  }
+  // initialize() async {
+  //   await flutterLocalNotificationsPlugin.initialize(
+  //     const InitializationSettings(
+  //       android: AndroidInitializationSettings("@mipmap/ic_launcher"),
+  //     ),
+  //     onDidReceiveNotificationResponse: (details) {
+  //       //noti = "normal: ${details.payload!}";
+  //     },
+  //     onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
+  //   );
+  // }
 
-  setupLocalNotifications(String title, String msg, Duration duratuion) async {
-    tz.initializeTimeZones();
-    final String timeZoneName = await FlutterTimezone.getLocalTimezone();
-    tz.setLocalLocation(tz.getLocation(timeZoneName));
-    flutterLocalNotificationsPlugin.zonedSchedule(
-      0,
-      title,
-      msg,
-      tz.TZDateTime.now(tz.local).add(duratuion),
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          "0",
-          "notification",
-          channelDescription: "this is used to create notification",
-          priority: Priority.high,
-          importance: Importance.high,
-          fullScreenIntent: true,
-        ),
-      ),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-    );
-  }
+  // setupLocalNotifications(String title, String msg, Duration duratuion) async {
+  //   tz.initializeTimeZones();
+  //   final String timeZoneName = await FlutterTimezone.getLocalTimezone();
+  //   tz.setLocalLocation(tz.getLocation(timeZoneName));
+  //   flutterLocalNotificationsPlugin.zonedSchedule(
+  //     0,
+  //     title,
+  //     msg,
+  //     tz.TZDateTime.now(tz.local).add(duratuion),
+  //     const NotificationDetails(
+  //       android: AndroidNotificationDetails(
+  //         "0",
+  //         "notification",
+  //         channelDescription: "this is used to create notification",
+  //         priority: Priority.high,
+  //         importance: Importance.high,
+  //         fullScreenIntent: true,
+  //       ),
+  //     ),
+  //     androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+  //     uiLocalNotificationDateInterpretation:
+  //         UILocalNotificationDateInterpretation.absoluteTime,
+  //   );
+  // }
 
   @override
   void dispose() {
@@ -162,7 +161,7 @@ class _CountDownTimerState extends State<CountDownTimer> {
       ),
       body: Center(
         child: Column(
-          //mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
               width: size.width,
@@ -385,16 +384,38 @@ class _CountDownTimerState extends State<CountDownTimer> {
                       if (timer != null) {
                         isActive = false;
                         timer?.cancel();
+                        await Alarm.stop(1);
                         await prefs?.setBool("countDownRunning", false);
                       }
                     } else {
+                      final alarmSettings = AlarmSettings(
+                        id: 1,
+                        dateTime: DateTime.now().add(
+                          Duration(
+                            hours: int.parse("$h1$h2"),
+                            minutes: int.parse("$m1$m2"),
+                            seconds: int.parse("$s1$s2"),
+                          ),
+                        ),
+                        assetAudioPath: 'assets/alarm.wav',
+                        loopAudio: true,
+                        vibrate: true,
+                        fadeDuration: 3.0,
+                        notificationTitle: 'Count Down',
+                        notificationBody: 'Your Count Down Timer has finished',
+                        enableNotificationOnKill: true,
+                      );
+                      await Alarm.set(alarmSettings: alarmSettings);
                       startTimer();
                     }
                   },
                   child: SvgPicture.asset(
                     "assets/${isActive ? "pause" : "play"}.svg",
                     color: Colors.white,
-                    height: size.height * 0.1,
+                    height: MediaQuery.of(context).orientation ==
+                            Orientation.portrait
+                        ? size.height * 0.1
+                        : size.width * 0.1,
                   ),
                 ),
                 InkWell(
@@ -404,7 +425,8 @@ class _CountDownTimerState extends State<CountDownTimer> {
                     if (timer != null) {
                       isActive = false;
                       timer?.cancel();
-                      await flutterLocalNotificationsPlugin.cancelAll();
+                      Alarm.stop(1);
+                      //await flutterLocalNotificationsPlugin.cancelAll();
                       await prefs?.setBool("countDownRunning", false);
                     }
                     setState(() {});
@@ -412,7 +434,10 @@ class _CountDownTimerState extends State<CountDownTimer> {
                   child: SvgPicture.asset(
                     "assets/reset.svg",
                     color: Colors.white,
-                    height: size.height * 0.1,
+                    height: MediaQuery.of(context).orientation ==
+                            Orientation.portrait
+                        ? size.height * 0.1
+                        : size.width * 0.1,
                   ),
                 ),
               ],
@@ -437,8 +462,8 @@ class _CountDownTimerState extends State<CountDownTimer> {
       minutes: int.parse("$m1$m2"),
       seconds: int.parse("$s1$s2"),
     );
-    setupLocalNotifications(
-        "Count Down", "Your Count Down Timer has finished", time);
+    // setupLocalNotifications(
+    //     "Count Down", "Your Count Down Timer has finished", time);
     timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       time -= const Duration(seconds: 1);
       List<String> t = time.toString().split(":");

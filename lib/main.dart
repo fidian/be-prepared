@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:alarm/alarm.dart';
 import 'package:be_prepared/screens/Mirror.dart';
 import 'package:be_prepared/screens/countdown.dart';
 import 'package:be_prepared/screens/magnify.dart';
@@ -12,8 +13,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:torch_controller/torch_controller.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   TorchController().initialize();
+  print("p");
+  await Alarm.init();
+  print("a");
   runApp(const MyApp());
 }
 
