@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:isolate';
 
 import 'package:flutter/material.dart';
 //import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -152,9 +153,20 @@ class _CountDownTimerState extends State<CountDownTimer> {
     super.dispose();
   }
 
+  @pragma('vm:entry-point')
+  static void printHello() {
+    final DateTime now = DateTime.now();
+    final int isolateId = Isolate.current.hashCode;
+    print("[$now] Hello, world! isolate=$isolateId function='$printHello'");
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    bool isPortrait =
+        MediaQuery.of(context).orientation == Orientation.portrait;
+    double iconSize = isPortrait ? size.height * 0.15 : size.width * 0.15;
+    double textSize = isPortrait ? size.height * 0.1 : size.width * 0.07;
     return Scaffold(
       appBar: AppBar(
         title: const Text("Count Down Timer"),
@@ -187,7 +199,9 @@ class _CountDownTimerState extends State<CountDownTimer> {
                       ),
                       Text(
                         "$h1",
-                        style: const TextStyle(fontSize: 20),
+                        style: TextStyle(
+                          fontSize: textSize,
+                        ),
                       ),
                       InkWell(
                         onTap: () {
@@ -221,7 +235,9 @@ class _CountDownTimerState extends State<CountDownTimer> {
                       ),
                       Text(
                         "$h2",
-                        style: const TextStyle(fontSize: 20),
+                        style: TextStyle(
+                          fontSize: textSize,
+                        ),
                       ),
                       InkWell(
                         onTap: () {
@@ -255,7 +271,9 @@ class _CountDownTimerState extends State<CountDownTimer> {
                       ),
                       Text(
                         "$m1",
-                        style: const TextStyle(fontSize: 20),
+                        style: TextStyle(
+                          fontSize: textSize,
+                        ),
                       ),
                       InkWell(
                         onTap: () {
@@ -287,7 +305,9 @@ class _CountDownTimerState extends State<CountDownTimer> {
                       ),
                       Text(
                         "$m2",
-                        style: const TextStyle(fontSize: 20),
+                        style: TextStyle(
+                          fontSize: textSize,
+                        ),
                       ),
                       InkWell(
                         onTap: () {
@@ -321,7 +341,9 @@ class _CountDownTimerState extends State<CountDownTimer> {
                       ),
                       Text(
                         "$s1",
-                        style: const TextStyle(fontSize: 20),
+                        style: TextStyle(
+                          fontSize: textSize,
+                        ),
                       ),
                       InkWell(
                         onTap: () {
@@ -353,7 +375,9 @@ class _CountDownTimerState extends State<CountDownTimer> {
                       ),
                       Text(
                         "$s2",
-                        style: const TextStyle(fontSize: 20),
+                        style: TextStyle(
+                          fontSize: textSize,
+                        ),
                       ),
                       InkWell(
                         onTap: () {
@@ -385,9 +409,31 @@ class _CountDownTimerState extends State<CountDownTimer> {
                         isActive = false;
                         timer?.cancel();
                         await Alarm.stop(1);
+                        //await AndroidAlarmManager.cancel(1);
                         await prefs?.setBool("countDownRunning", false);
                       }
                     } else {
+                      // AndroidAlarmManager.oneShotAt(
+                      //   DateTime.now().add(
+                      //     Duration(
+                      //       hours: int.parse("$h1$h2"),
+                      //       minutes: int.parse("$m1$m2"),
+                      //       seconds: int.parse("$s1$s2"),
+                      //     ),
+                      //   ),
+                      //   1,
+                      //   printHello,
+                      //   wakeup: true,
+                      //   alarmClock: true,
+                      //   allowWhileIdle: true,
+                      // );
+
+                      String value = Duration(
+                        hours: int.parse("$h1$h2"),
+                        minutes: int.parse("$m1$m2"),
+                        seconds: int.parse("$s1$s2"),
+                      ).toString();
+                      prefs?.setString("lastCountDownTimer", value);
                       final alarmSettings = AlarmSettings(
                         id: 1,
                         dateTime: DateTime.now().add(
@@ -412,16 +458,31 @@ class _CountDownTimerState extends State<CountDownTimer> {
                   child: SvgPicture.asset(
                     "assets/${isActive ? "pause" : "play"}.svg",
                     color: Colors.white,
-                    height: MediaQuery.of(context).orientation ==
-                            Orientation.portrait
-                        ? size.height * 0.1
-                        : size.width * 0.1,
+                    height: isPortrait ? size.height * 0.1 : size.width * 0.09,
                   ),
                 ),
                 InkWell(
                   onTap: () async {
-                    h1 = h2 = m1 = m2 = s1 = s2 = 0;
+                    //h1 = h2 = m1 = m2 = s1 = s2 = 0;
+                    String oldTimeSaved =
+                        prefs?.getString("lastCountDownTimer") ?? '';
+                    if (oldTimeSaved == '') return;
 
+                    var TimeToLoad = oldTimeSaved.split(":");
+                    log("time to load: $TimeToLoad");
+                    if (TimeToLoad[0].length == 2) {
+                      h1 = int.parse(TimeToLoad[0][0]);
+                      h2 = int.parse(TimeToLoad[0][1]);
+                    } else {
+                      h1 = 0;
+                      h2 = int.parse(TimeToLoad[0][0]);
+                    }
+                    m1 = int.parse(TimeToLoad[1][0]);
+                    m2 = int.parse(TimeToLoad[1][1]);
+                    List<String> ts = TimeToLoad[2].split(".");
+                    s1 = int.parse(ts[0][0]);
+                    s2 = int.parse(ts[0][1]);
+                    setState(() {});
                     if (timer != null) {
                       isActive = false;
                       timer?.cancel();
@@ -437,7 +498,7 @@ class _CountDownTimerState extends State<CountDownTimer> {
                     height: MediaQuery.of(context).orientation ==
                             Orientation.portrait
                         ? size.height * 0.1
-                        : size.width * 0.1,
+                        : size.width * 0.09,
                   ),
                 ),
               ],
@@ -464,6 +525,8 @@ class _CountDownTimerState extends State<CountDownTimer> {
     );
     // setupLocalNotifications(
     //     "Count Down", "Your Count Down Timer has finished", time);
+    isActive = true;
+    setState(() {});
     timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       time -= const Duration(seconds: 1);
       List<String> t = time.toString().split(":");

@@ -80,6 +80,9 @@ class _StopWatchState extends State<StopWatch> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    bool isPortrait =
+        MediaQuery.of(context).orientation == Orientation.portrait;
+    double textSize = isPortrait ? size.height * 0.1 : size.width * 0.08;
     return Scaffold(
       appBar: AppBar(
         title: const Text("Stop Watch"),
@@ -90,7 +93,7 @@ class _StopWatchState extends State<StopWatch> {
           children: [
             Text(
               toShow,
-              style: const TextStyle(fontSize: 30),
+              style: TextStyle(fontSize: textSize),
             ),
             SizedBox(
               height: size.height * 0.15,

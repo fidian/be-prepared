@@ -122,12 +122,9 @@ class _MirrorState extends State<Mirror> {
         SizedBox(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
-          child: Transform.scale(
-            scale: controller.value.aspectRatio / (size.width / size.height),
-            child: AspectRatio(
-              aspectRatio: controller.value.aspectRatio,
-              child: CameraPreview(controller),
-            ),
+          child: AspectRatio(
+            aspectRatio: controller.value.aspectRatio,
+            child: CameraPreview(controller),
           ),
         ),
         // SizedBox(
