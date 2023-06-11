@@ -10,13 +10,21 @@ packages:
     source: hosted
     version: "1.0.5"
   android_alarm_manager_plus:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: android_alarm_manager_plus
       sha256: "88a8001851fdc9bd54fa4e30d0277bb900a50f3d86ff244da7f027400bf23ac0"
       url: "https://pub.dev"
     source: hosted
     version: "2.1.4"
+  app_to_foreground:
+    dependency: "direct main"
+    description:
+      name: app_to_foreground
+      sha256: ebacd8ae200555ed26544d8e36318b13dcce8ea53317d5b7f009bc7381aed95f
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.3"
   args:
     dependency: transitive
     description:

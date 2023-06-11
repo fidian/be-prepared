@@ -12,10 +12,12 @@ import 'package:be_prepared/screens/screenBright.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:torch_controller/torch_controller.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   TorchController().initialize();
+  await AndroidAlarmManager.initialize();
   print("p");
   await Alarm.init();
   print("a");

@@ -20,6 +20,8 @@ class _MagnifyState extends State<Magnify> {
   double scale = 8.0;
   double zooming = 0.0;
   double zoomDeccrement = 0.0;
+  double maxZoom = 0.0;
+  double minZoom = 0.0;
 
   @override
   void initState() {
@@ -38,6 +40,8 @@ class _MagnifyState extends State<Magnify> {
       }
       zoom = await controller.getMaxZoomLevel();
       zooming = zoom;
+      maxZoom = zoom;
+      minZoom = await controller.getMinZoomLevel();
       log("Max zoom level: $zoom");
       log("Min zoom level: ${await controller.getMinZoomLevel()}");
       await controller.setZoomLevel(zoom);
@@ -95,13 +99,14 @@ class _MagnifyState extends State<Magnify> {
           //scale = details.scale.clamp(1, 10);
           //log("update: $scale");
 
-          if (zoom * details.scale > await controller.getMaxZoomLevel() ||
-              zoom * details.scale < await controller.getMinZoomLevel()) {
+          if (zoom * details.scale > maxZoom ||
+              zoom * details.scale < minZoom) {
             log("if check ${zoom * details.scale}");
             return;
+          } else {
+            await controller.setZoomLevel(zoom * details.scale);
+            scale = zoom * details.scale;
           }
-          await controller.setZoomLevel(zoom * details.scale);
-          scale = zoom * details.scale;
         },
         onScaleEnd: (details) {
           //zoom *= scale;
@@ -143,12 +148,9 @@ class _MagnifyState extends State<Magnify> {
         SizedBox(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
-          child: Transform.scale(
-            scale: controller.value.aspectRatio / (size.width / size.height),
-            child: AspectRatio(
-              aspectRatio: controller.value.aspectRatio,
-              child: CameraPreview(controller),
-            ),
+          child: AspectRatio(
+            aspectRatio: controller.value.aspectRatio,
+            child: CameraPreview(controller),
           ),
         ),
         Padding(
