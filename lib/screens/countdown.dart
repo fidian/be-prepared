@@ -166,10 +166,22 @@ class _CountDownTimerState extends State<CountDownTimer> {
     bool isPortrait =
         MediaQuery.of(context).orientation == Orientation.portrait;
     double iconSize = isPortrait ? size.height * 0.15 : size.width * 0.15;
-    double textSize = isPortrait ? size.height * 0.1 : size.width * 0.07;
+    double textSize = isPortrait ? size.height * 0.09 : size.width * 0.07;
     return Scaffold(
       appBar: AppBar(
         title: const Text("Count Down Timer"),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Alarm.stop(1);
+            },
+            icon: const Icon(
+              Icons.alarm_off,
+              color: Colors.white,
+            ),
+            tooltip: "Press it if you are unable to turn of the Alarm",
+          ),
+        ],
       ),
       body: Center(
         child: Column(
@@ -253,7 +265,12 @@ class _CountDownTimerState extends State<CountDownTimer> {
                       ),
                     ],
                   ),
-                  const Text(":"),
+                  Text(
+                    ":",
+                    style: TextStyle(
+                      fontSize: textSize,
+                    ),
+                  ),
                   //minute
                   Column(
                     children: [
@@ -323,7 +340,12 @@ class _CountDownTimerState extends State<CountDownTimer> {
                       ),
                     ],
                   ),
-                  const Text(":"),
+                  Text(
+                    ":",
+                    style: TextStyle(
+                      fontSize: textSize,
+                    ),
+                  ),
                   //second
                   Column(
                     children: [
@@ -433,6 +455,11 @@ class _CountDownTimerState extends State<CountDownTimer> {
                         minutes: int.parse("$m1$m2"),
                         seconds: int.parse("$s1$s2"),
                       ).toString();
+
+                      if (value == "0:00:00.000000") {
+                        log("0 timer value: $value");
+                        return;
+                      }
                       prefs?.setString("lastCountDownTimer", value);
                       final alarmSettings = AlarmSettings(
                         id: 1,

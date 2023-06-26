@@ -82,12 +82,12 @@ class _MagnifyState extends State<Magnify> {
         onScaleUpdate: (details) async {
           if (details.pointerCount != 2) return;
           if (details.scale == 1.0) {
-            log("in if scale: ${details.scale}");
+            //log("in if scale: ${details.scale}");
             return;
           } else {
             //scale += details.scale.clamp(1, 10);
           }
-          log("scale update: ${details.scale}");
+          //log("scale update: ${details.scale}");
           // zoom = zoom * details.scale;
           // if (zoom * details.scale < 1 || zoom * details.scale > 8) {
           //   log("value: ${zoom * details.scale}");
@@ -99,14 +99,18 @@ class _MagnifyState extends State<Magnify> {
           //scale = details.scale.clamp(1, 10);
           //log("update: $scale");
 
-          if (zoom * details.scale > maxZoom ||
-              zoom * details.scale < minZoom) {
-            log("if check ${zoom * details.scale}");
+          if (zoom * details.scale > maxZoom) {
+            log("greater than max ${zoom * details.scale}");
+            await controller.setZoomLevel(maxZoom);
+            return;
+          } else if (zoom * details.scale < minZoom) {
+            log("greater than max ${zoom * details.scale}");
+            await controller.setZoomLevel(minZoom);
             return;
           } else {
             await controller.setZoomLevel(zoom * details.scale);
-            scale = zoom * details.scale;
           }
+          scale = zoom * details.scale;
         },
         onScaleEnd: (details) {
           //zoom *= scale;
