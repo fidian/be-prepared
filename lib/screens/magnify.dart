@@ -134,7 +134,19 @@ class _MagnifyState extends State<Magnify> {
   bool isFlashOn = false;
 
   Widget camera(BuildContext ctx) {
-    Size size = MediaQuery.of(context).size;
+    //Size size = MediaQuery.of(context).size;
+    var camera = controller.value;
+    // fetch screen size
+    final size = MediaQuery.of(context).size;
+
+    // calculate scale depending on screen and camera ratios
+    // this is actually size.aspectRatio / (1 / camera.aspectRatio)
+    // because camera preview size is received as landscape
+    // but we're calculating for portrait orientation
+    var scale = size.aspectRatio * camera.aspectRatio;
+
+    // to prevent scaling down, invert the value
+    if (scale < 1) scale = 1 / scale;
     return Stack(
       alignment: Alignment.bottomLeft,
       children: [
@@ -145,11 +157,19 @@ class _MagnifyState extends State<Magnify> {
         //     controller,
         //   ),
         // ),
-        SizedBox(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          child: AspectRatio(
-            aspectRatio: controller.value.aspectRatio,
+
+        // SizedBox(
+        //   height: MediaQuery.of(context).size.height,
+        //   width: MediaQuery.of(context).size.width,
+        //   child: AspectRatio(
+        //     aspectRatio: controller.value.aspectRatio,
+        //     child: CameraPreview(controller),
+        //   ),
+        // ),
+
+        Transform.scale(
+          scale: scale,
+          child: Center(
             child: CameraPreview(controller),
           ),
         ),
