@@ -167,370 +167,389 @@ class _CountDownTimerState extends State<CountDownTimer> {
         MediaQuery.of(context).orientation == Orientation.portrait;
     double iconSize = isPortrait ? size.height * 0.15 : size.width * 0.15;
     double textSize = isPortrait ? size.height * 0.09 : size.width * 0.07;
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Count Down Timer"),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Alarm.stop(1);
-            },
-            icon: const Icon(
-              Icons.alarm_off,
-              color: Colors.white,
-            ),
-            tooltip: "Press it if you are unable to turn of the Alarm",
-          ),
-        ],
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: size.width,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  //hour
-                  Column(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          if (h1 == 2 || isActive) {
-                            return;
-                          }
-                          setState(() {
-                            h1++;
-                          });
-                        },
-                        child: const Icon(
-                          Icons.arrow_drop_up,
-                          size: 50,
+    return GestureDetector(
+      onTap: () {
+        Alarm.stop(1);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Count Down Timer"),
+          // actions: [
+          //   IconButton(
+          //     onPressed: () {
+          //       Alarm.stop(1);
+          //     },
+          //     icon: const Icon(
+          //       Icons.alarm_off,
+          //       color: Colors.white,
+          //     ),
+          //     tooltip: "Press it if you are unable to turn of the Alarm",
+          //   ),
+          // ],
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: size.width,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    //hour
+                    Column(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            Alarm.stop(1);
+                            if (h1 == 2 || isActive) {
+                              return;
+                            }
+                            setState(() {
+                              h1++;
+                            });
+                          },
+                          child: const Icon(
+                            Icons.arrow_drop_up,
+                            size: 50,
+                          ),
                         ),
-                      ),
-                      Text(
-                        "$h1",
-                        style: TextStyle(
-                          fontSize: textSize,
+                        Text(
+                          "$h1",
+                          style: TextStyle(
+                            fontSize: textSize,
+                          ),
                         ),
-                      ),
-                      InkWell(
-                        onTap: () {
-                          if (h1 == 0 || isActive) {
-                            return;
-                          }
-                          setState(() {
-                            h1--;
-                          });
-                        },
-                        child: const Icon(
-                          Icons.arrow_drop_down,
-                          size: 50,
+                        InkWell(
+                          onTap: () {
+                            Alarm.stop(1);
+                            if (h1 == 0 || isActive) {
+                              return;
+                            }
+                            setState(() {
+                              h1--;
+                            });
+                          },
+                          child: const Icon(
+                            Icons.arrow_drop_down,
+                            size: 50,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          if (h2 == 9 || isActive) return;
-                          setState(() {
-                            h2++;
-                          });
-                        },
-                        child: const Icon(
-                          Icons.arrow_drop_up,
-                          size: 50,
-                        ),
-                      ),
-                      Text(
-                        "$h2",
-                        style: TextStyle(
-                          fontSize: textSize,
-                        ),
-                      ),
-                      InkWell(
-                        onTap: () {
-                          if (h2 == 0 || isActive) return;
-                          setState(() {
-                            h2--;
-                          });
-                        },
-                        child: const Icon(
-                          Icons.arrow_drop_down,
-                          size: 50,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Text(
-                    ":",
-                    style: TextStyle(
-                      fontSize: textSize,
+                      ],
                     ),
-                  ),
-                  //minute
-                  Column(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          if (m1 == 5 || isActive) return;
-                          setState(() {
-                            m1++;
-                          });
-                        },
-                        child: const Icon(
-                          Icons.arrow_drop_up,
-                          size: 50,
+                    Column(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            Alarm.stop(1);
+                            if (h2 == 9 || isActive) return;
+                            setState(() {
+                              h2++;
+                            });
+                          },
+                          child: const Icon(
+                            Icons.arrow_drop_up,
+                            size: 50,
+                          ),
                         ),
-                      ),
-                      Text(
-                        "$m1",
-                        style: TextStyle(
-                          fontSize: textSize,
+                        Text(
+                          "$h2",
+                          style: TextStyle(
+                            fontSize: textSize,
+                          ),
                         ),
-                      ),
-                      InkWell(
-                        onTap: () {
-                          if (m1 == 0 || isActive) return;
-                          setState(() {
-                            m1--;
-                          });
-                        },
-                        child: const Icon(
-                          Icons.arrow_drop_down,
-                          size: 50,
+                        InkWell(
+                          onTap: () {
+                            Alarm.stop(1);
+                            if (h2 == 0 || isActive) return;
+                            setState(() {
+                              h2--;
+                            });
+                          },
+                          child: const Icon(
+                            Icons.arrow_drop_down,
+                            size: 50,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          if (m2 == 9 || isActive) return;
-                          setState(() {
-                            m2++;
-                          });
-                        },
-                        child: const Icon(
-                          Icons.arrow_drop_up,
-                          size: 50,
-                        ),
-                      ),
-                      Text(
-                        "$m2",
-                        style: TextStyle(
-                          fontSize: textSize,
-                        ),
-                      ),
-                      InkWell(
-                        onTap: () {
-                          if (m2 == 0 || isActive) return;
-                          setState(() {
-                            m2--;
-                          });
-                        },
-                        child: const Icon(
-                          Icons.arrow_drop_down,
-                          size: 50,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Text(
-                    ":",
-                    style: TextStyle(
-                      fontSize: textSize,
+                      ],
                     ),
-                  ),
-                  //second
-                  Column(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          if (s1 == 5 || isActive) return;
-                          setState(() {
-                            s1++;
-                          });
-                        },
-                        child: const Icon(
-                          Icons.arrow_drop_up,
-                          size: 50,
-                        ),
+                    Text(
+                      ":",
+                      style: TextStyle(
+                        fontSize: textSize,
                       ),
-                      Text(
-                        "$s1",
-                        style: TextStyle(
-                          fontSize: textSize,
+                    ),
+                    //minute
+                    Column(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            Alarm.stop(1);
+                            if (m1 == 5 || isActive) return;
+                            setState(() {
+                              m1++;
+                            });
+                          },
+                          child: const Icon(
+                            Icons.arrow_drop_up,
+                            size: 50,
+                          ),
                         ),
-                      ),
-                      InkWell(
-                        onTap: () {
-                          if (s1 == 0 || isActive) return;
-                          setState(() {
-                            s1--;
-                          });
-                        },
-                        child: const Icon(
-                          Icons.arrow_drop_down,
-                          size: 50,
+                        Text(
+                          "$m1",
+                          style: TextStyle(
+                            fontSize: textSize,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          if (s2 == 9 || isActive) return;
-                          setState(() {
-                            s2++;
-                          });
-                        },
-                        child: const Icon(
-                          Icons.arrow_drop_up,
-                          size: 50,
+                        InkWell(
+                          onTap: () {
+                            Alarm.stop(1);
+                            if (m1 == 0 || isActive) return;
+                            setState(() {
+                              m1--;
+                            });
+                          },
+                          child: const Icon(
+                            Icons.arrow_drop_down,
+                            size: 50,
+                          ),
                         ),
-                      ),
-                      Text(
-                        "$s2",
-                        style: TextStyle(
-                          fontSize: textSize,
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            Alarm.stop(1);
+                            if (m2 == 9 || isActive) return;
+                            setState(() {
+                              m2++;
+                            });
+                          },
+                          child: const Icon(
+                            Icons.arrow_drop_up,
+                            size: 50,
+                          ),
                         ),
-                      ),
-                      InkWell(
-                        onTap: () {
-                          if (s2 == 0 || isActive) return;
-                          setState(() {
-                            s2--;
-                          });
-                        },
-                        child: const Icon(
-                          Icons.arrow_drop_down,
-                          size: 50,
+                        Text(
+                          "$m2",
+                          style: TextStyle(
+                            fontSize: textSize,
+                          ),
                         ),
+                        InkWell(
+                          onTap: () {
+                            Alarm.stop(1);
+                            if (m2 == 0 || isActive) return;
+                            setState(() {
+                              m2--;
+                            });
+                          },
+                          child: const Icon(
+                            Icons.arrow_drop_down,
+                            size: 50,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      ":",
+                      style: TextStyle(
+                        fontSize: textSize,
                       ),
-                    ],
-                  ),
-                ],
+                    ),
+                    //second
+                    Column(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            Alarm.stop(1);
+                            if (s1 == 5 || isActive) return;
+                            setState(() {
+                              s1++;
+                            });
+                          },
+                          child: const Icon(
+                            Icons.arrow_drop_up,
+                            size: 50,
+                          ),
+                        ),
+                        Text(
+                          "$s1",
+                          style: TextStyle(
+                            fontSize: textSize,
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () {
+                            Alarm.stop(1);
+                            if (s1 == 0 || isActive) return;
+                            setState(() {
+                              s1--;
+                            });
+                          },
+                          child: const Icon(
+                            Icons.arrow_drop_down,
+                            size: 50,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            Alarm.stop(1);
+                            if (s2 == 9 || isActive) return;
+                            setState(() {
+                              s2++;
+                            });
+                          },
+                          child: const Icon(
+                            Icons.arrow_drop_up,
+                            size: 50,
+                          ),
+                        ),
+                        Text(
+                          "$s2",
+                          style: TextStyle(
+                            fontSize: textSize,
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () {
+                            Alarm.stop(1);
+                            if (s2 == 0 || isActive) return;
+                            setState(() {
+                              s2--;
+                            });
+                          },
+                          child: const Icon(
+                            Icons.arrow_drop_down,
+                            size: 50,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-            SizedBox(
-              height: size.height * 0.1,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                InkWell(
-                  onTap: () async {
-                    if (isActive) {
+              SizedBox(
+                height: size.height * 0.1,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  InkWell(
+                    onTap: () async {
+                      if (isActive) {
+                        if (timer != null) {
+                          isActive = false;
+                          timer?.cancel();
+                          await Alarm.stop(1);
+                          //await AndroidAlarmManager.cancel(1);
+                          await prefs?.setBool("countDownRunning", false);
+                        }
+                      } else {
+                        // AndroidAlarmManager.oneShotAt(
+                        //   DateTime.now().add(
+                        //     Duration(
+                        //       hours: int.parse("$h1$h2"),
+                        //       minutes: int.parse("$m1$m2"),
+                        //       seconds: int.parse("$s1$s2"),
+                        //     ),
+                        //   ),
+                        //   1,
+                        //   printHello,
+                        //   wakeup: true,
+                        //   alarmClock: true,
+                        //   allowWhileIdle: true,
+                        // );
+
+                        String value = Duration(
+                          hours: int.parse("$h1$h2"),
+                          minutes: int.parse("$m1$m2"),
+                          seconds: int.parse("$s1$s2"),
+                        ).toString();
+
+                        if (value == "0:00:00.000000") {
+                          log("0 timer value: $value");
+                          return;
+                        }
+                        prefs?.setString("lastCountDownTimer", value);
+                        final alarmSettings = AlarmSettings(
+                          id: 1,
+                          dateTime: DateTime.now().add(
+                            Duration(
+                              hours: int.parse("$h1$h2"),
+                              minutes: int.parse("$m1$m2"),
+                              seconds: int.parse("$s1$s2"),
+                            ),
+                          ),
+                          assetAudioPath: 'assets/alarm.wav',
+                          loopAudio: true,
+                          vibrate: true,
+                          fadeDuration: 3.0,
+                          notificationTitle: 'Count Down',
+                          notificationBody:
+                              'Your Count Down Timer has finished',
+                          enableNotificationOnKill: true,
+                        );
+                        await Alarm.set(alarmSettings: alarmSettings);
+                        startTimer();
+                      }
+                    },
+                    child: SvgPicture.asset(
+                      "assets/${isActive ? "pause" : "play"}.svg",
+                      color: Colors.white,
+                      height:
+                          isPortrait ? size.height * 0.1 : size.width * 0.09,
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () async {
+                      //h1 = h2 = m1 = m2 = s1 = s2 = 0;
+                      String oldTimeSaved =
+                          prefs?.getString("lastCountDownTimer") ?? '';
+                      if (oldTimeSaved == '') return;
+
+                      var TimeToLoad = oldTimeSaved.split(":");
+                      log("time to load: $TimeToLoad");
+                      if (TimeToLoad[0].length == 2) {
+                        h1 = int.parse(TimeToLoad[0][0]);
+                        h2 = int.parse(TimeToLoad[0][1]);
+                      } else {
+                        h1 = 0;
+                        h2 = int.parse(TimeToLoad[0][0]);
+                      }
+                      m1 = int.parse(TimeToLoad[1][0]);
+                      m2 = int.parse(TimeToLoad[1][1]);
+                      List<String> ts = TimeToLoad[2].split(".");
+                      s1 = int.parse(ts[0][0]);
+                      s2 = int.parse(ts[0][1]);
+                      setState(() {});
                       if (timer != null) {
                         isActive = false;
                         timer?.cancel();
-                        await Alarm.stop(1);
-                        //await AndroidAlarmManager.cancel(1);
+                        Alarm.stop(1);
+                        //await flutterLocalNotificationsPlugin.cancelAll();
                         await prefs?.setBool("countDownRunning", false);
                       }
-                    } else {
-                      // AndroidAlarmManager.oneShotAt(
-                      //   DateTime.now().add(
-                      //     Duration(
-                      //       hours: int.parse("$h1$h2"),
-                      //       minutes: int.parse("$m1$m2"),
-                      //       seconds: int.parse("$s1$s2"),
-                      //     ),
-                      //   ),
-                      //   1,
-                      //   printHello,
-                      //   wakeup: true,
-                      //   alarmClock: true,
-                      //   allowWhileIdle: true,
-                      // );
-
-                      String value = Duration(
-                        hours: int.parse("$h1$h2"),
-                        minutes: int.parse("$m1$m2"),
-                        seconds: int.parse("$s1$s2"),
-                      ).toString();
-
-                      if (value == "0:00:00.000000") {
-                        log("0 timer value: $value");
-                        return;
-                      }
-                      prefs?.setString("lastCountDownTimer", value);
-                      final alarmSettings = AlarmSettings(
-                        id: 1,
-                        dateTime: DateTime.now().add(
-                          Duration(
-                            hours: int.parse("$h1$h2"),
-                            minutes: int.parse("$m1$m2"),
-                            seconds: int.parse("$s1$s2"),
-                          ),
-                        ),
-                        assetAudioPath: 'assets/alarm.wav',
-                        loopAudio: true,
-                        vibrate: true,
-                        fadeDuration: 3.0,
-                        notificationTitle: 'Count Down',
-                        notificationBody: 'Your Count Down Timer has finished',
-                        enableNotificationOnKill: true,
-                      );
-                      await Alarm.set(alarmSettings: alarmSettings);
-                      startTimer();
-                    }
-                  },
-                  child: SvgPicture.asset(
-                    "assets/${isActive ? "pause" : "play"}.svg",
-                    color: Colors.white,
-                    height: isPortrait ? size.height * 0.1 : size.width * 0.09,
+                      setState(() {});
+                    },
+                    child: SvgPicture.asset(
+                      "assets/reset.svg",
+                      color: Colors.white,
+                      height: MediaQuery.of(context).orientation ==
+                              Orientation.portrait
+                          ? size.height * 0.1
+                          : size.width * 0.09,
+                    ),
                   ),
-                ),
-                InkWell(
-                  onTap: () async {
-                    //h1 = h2 = m1 = m2 = s1 = s2 = 0;
-                    String oldTimeSaved =
-                        prefs?.getString("lastCountDownTimer") ?? '';
-                    if (oldTimeSaved == '') return;
-
-                    var TimeToLoad = oldTimeSaved.split(":");
-                    log("time to load: $TimeToLoad");
-                    if (TimeToLoad[0].length == 2) {
-                      h1 = int.parse(TimeToLoad[0][0]);
-                      h2 = int.parse(TimeToLoad[0][1]);
-                    } else {
-                      h1 = 0;
-                      h2 = int.parse(TimeToLoad[0][0]);
-                    }
-                    m1 = int.parse(TimeToLoad[1][0]);
-                    m2 = int.parse(TimeToLoad[1][1]);
-                    List<String> ts = TimeToLoad[2].split(".");
-                    s1 = int.parse(ts[0][0]);
-                    s2 = int.parse(ts[0][1]);
-                    setState(() {});
-                    if (timer != null) {
-                      isActive = false;
-                      timer?.cancel();
-                      Alarm.stop(1);
-                      //await flutterLocalNotificationsPlugin.cancelAll();
-                      await prefs?.setBool("countDownRunning", false);
-                    }
-                    setState(() {});
-                  },
-                  child: SvgPicture.asset(
-                    "assets/reset.svg",
-                    color: Colors.white,
-                    height: MediaQuery.of(context).orientation ==
-                            Orientation.portrait
-                        ? size.height * 0.1
-                        : size.width * 0.09,
-                  ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

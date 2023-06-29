@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -31,6 +32,10 @@ class _MagnifyState extends State<Magnify> {
   }
 
   initialize() async {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     permissionStatus = await Permission.camera.request();
     _cameras = await availableCameras();
     controller = CameraController(_cameras[0], ResolutionPreset.max);
