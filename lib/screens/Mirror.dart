@@ -116,22 +116,42 @@ class _MirrorState extends State<Mirror> {
 
   Widget camera(BuildContext ctx) {
     Size size = MediaQuery.of(context).size;
+    //Size size = MediaQuery.of(context).size;
+    var camera = controller.value;
+
+    // calculate scale depending on screen and camera ratios
+    // this is actually size.aspectRatio / (1 / camera.aspectRatio)
+    // because camera preview size is received as landscape
+    // but we're calculating for portrait orientation
+    var scale = size.aspectRatio * camera.aspectRatio;
+
+    // to prevent scaling down, invert the value
+    if (scale < 1) scale = 1 / scale;
+    log("screen: ${size.aspectRatio} cam: ${camera.aspectRatio} scale: $scale");
     return Stack(
       alignment: Alignment.bottomLeft,
       children: [
-        SizedBox(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          child: AspectRatio(
-            aspectRatio: controller.value.aspectRatio,
-            child: CameraPreview(controller),
-          ),
-        ),
+        // SizedBox(
+        //   height: MediaQuery.of(context).size.height,
+        //   width: MediaQuery.of(context).size.width,
+        //   child: AspectRatio(
+        //     aspectRatio: controller.value.aspectRatio,
+        //     child: CameraPreview(controller),
+        //   ),
+        // ),
         // SizedBox(
         //   height: MediaQuery.of(context).size.height,
         //   width: MediaQuery.of(context).size.width,
         //   child: CameraPreview(controller),
         // ),
+        Transform.scale(
+          scale: MediaQuery.of(context).orientation == Orientation.landscape
+              ? (size.aspectRatio / camera.aspectRatio)
+              : scale,
+          child: Center(
+            child: CameraPreview(controller),
+          ),
+        ),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: InkWell(

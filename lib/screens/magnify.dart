@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -32,10 +31,10 @@ class _MagnifyState extends State<Magnify> {
   }
 
   initialize() async {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
+    // SystemChrome.setPreferredOrientations([
+    //   DeviceOrientation.portraitUp,
+    //   DeviceOrientation.portraitDown,
+    // ]);
     permissionStatus = await Permission.camera.request();
     _cameras = await availableCameras();
     controller = CameraController(_cameras[0], ResolutionPreset.max);
@@ -156,6 +155,7 @@ class _MagnifyState extends State<Magnify> {
 
     // to prevent scaling down, invert the value
     if (scale < 1) scale = 1 / scale;
+    log("screen: ${size.aspectRatio} cam: ${camera.aspectRatio} scale: $scale");
     return Stack(
       alignment: Alignment.bottomLeft,
       children: [
@@ -177,7 +177,9 @@ class _MagnifyState extends State<Magnify> {
         // ),
 
         Transform.scale(
-          scale: scale,
+          scale: MediaQuery.of(context).orientation == Orientation.landscape
+              ? (size.aspectRatio / camera.aspectRatio)
+              : scale,
           child: Center(
             child: CameraPreview(controller),
           ),
