@@ -63,6 +63,7 @@ class _StopWatchState extends State<StopWatch> {
       //   toShow = Duration(seconds: time).toString().substring(0, 10);
       // }
       toShow = Duration(seconds: time).toString().split(".").first;
+      toShow = toShow.split(":").first.length == 1 ? "0$toShow" : toShow;
       isRunning = true;
       setState(() {});
       await prefs?.setInt("stopWatchTime", time);

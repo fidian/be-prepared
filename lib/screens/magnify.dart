@@ -31,6 +31,10 @@ class _MagnifyState extends State<Magnify> {
   }
 
   initialize() async {
+    // SystemChrome.setPreferredOrientations([
+    //   DeviceOrientation.portraitUp,
+    //   DeviceOrientation.portraitDown,
+    // ]);
     permissionStatus = await Permission.camera.request();
     _cameras = await availableCameras();
     controller = CameraController(_cameras[0], ResolutionPreset.max);
@@ -82,12 +86,12 @@ class _MagnifyState extends State<Magnify> {
         onScaleUpdate: (details) async {
           if (details.pointerCount != 2) return;
           if (details.scale == 1.0) {
-            log("in if scale: ${details.scale}");
+            //log("in if scale: ${details.scale}");
             return;
           } else {
             //scale += details.scale.clamp(1, 10);
           }
-          log("scale update: ${details.scale}");
+          //log("scale update: ${details.scale}");
           // zoom = zoom * details.scale;
           // if (zoom * details.scale < 1 || zoom * details.scale > 8) {
           //   log("value: ${zoom * details.scale}");
@@ -99,14 +103,18 @@ class _MagnifyState extends State<Magnify> {
           //scale = details.scale.clamp(1, 10);
           //log("update: $scale");
 
-          if (zoom * details.scale > maxZoom ||
-              zoom * details.scale < minZoom) {
-            log("if check ${zoom * details.scale}");
+          if (zoom * details.scale > maxZoom) {
+            log("greater than max ${zoom * details.scale}");
+            await controller.setZoomLevel(maxZoom);
+            return;
+          } else if (zoom * details.scale < minZoom) {
+            log("greater than max ${zoom * details.scale}");
+            await controller.setZoomLevel(minZoom);
             return;
           } else {
             await controller.setZoomLevel(zoom * details.scale);
-            scale = zoom * details.scale;
           }
+          scale = zoom * details.scale;
         },
         onScaleEnd: (details) {
           //zoom *= scale;
@@ -134,7 +142,20 @@ class _MagnifyState extends State<Magnify> {
   bool isFlashOn = false;
 
   Widget camera(BuildContext ctx) {
-    Size size = MediaQuery.of(context).size;
+    //Size size = MediaQuery.of(context).size;
+    var camera = controller.value;
+    // fetch screen size
+    final size = MediaQuery.of(context).size;
+
+    // calculate scale depending on screen and camera ratios
+    // this is actually size.aspectRatio / (1 / camera.aspectRatio)
+    // because camera preview size is received as landscape
+    // but we're calculating for portrait orientation
+    var scale = size.aspectRatio * camera.aspectRatio;
+
+    // to prevent scaling down, invert the value
+    if (scale < 1) scale = 1 / scale;
+    log("screen: ${size.aspectRatio} cam: ${camera.aspectRatio} scale: $scale");
     return Stack(
       alignment: Alignment.bottomLeft,
       children: [
@@ -145,11 +166,21 @@ class _MagnifyState extends State<Magnify> {
         //     controller,
         //   ),
         // ),
-        SizedBox(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          child: AspectRatio(
-            aspectRatio: controller.value.aspectRatio,
+
+        // SizedBox(
+        //   height: MediaQuery.of(context).size.height,
+        //   width: MediaQuery.of(context).size.width,
+        //   child: AspectRatio(
+        //     aspectRatio: controller.value.aspectRatio,
+        //     child: CameraPreview(controller),
+        //   ),
+        // ),
+
+        Transform.scale(
+          scale: MediaQuery.of(context).orientation == Orientation.landscape
+              ? (size.aspectRatio / camera.aspectRatio)
+              : scale,
+          child: Center(
             child: CameraPreview(controller),
           ),
         ),
